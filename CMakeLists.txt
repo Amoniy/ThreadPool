@@ -24,7 +24,7 @@ if ("$ENV{GTEST}" STREQUAL "y")
     add_definitions(-D_GTEST)
 endif ()
 
-set(SOURCE_FILES main.cpp Map.h ThreadPool.cpp ThreadPool.h Promise.h Future.h SharedState.h FlattenTuple.h tests/map_test.cpp tests/promise_test.cpp tests/flatten_test.cpp Flatten.h)
+set(SOURCE_FILES main.cpp Map.h ThreadPool.h Promise.h Future.h SharedState.h FlattenTuple.h tests/map_test.cpp tests/promise_test.cpp tests/flatten_test.cpp Flatten.h ThreadPool.cpp)
 add_executable(cpphometasks ${SOURCE_FILES})
 
 if ("$ENV{GTEST}" STREQUAL "y")

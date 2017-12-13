@@ -6,31 +6,28 @@
 
 template<typename T>
 class Future {
-
-    explicit Future(std::shared_ptr<FutureState<T> > state) : state_(state), getWasUsed(false) {
-
+    explicit Future(std::shared_ptr<FutureState<T> > state) : state(state), wasUsed(false) {
     }
 
     void ensureInitialized() const {
-        if (!state_) {
+        if (!state) {
             throw std::runtime_error("Future does not have state");
         }
     }
 
 
 public:
-
     ThreadPool *getPool() {
-        return state_->threadPool;
+        return state->threadPool;
     }
 
-    Future(Future &&f) noexcept : state_(std::move(f.state_)), getWasUsed(f.getWasUsed.load()) {
+    Future(Future &&future) noexcept : state(std::move(future.state)), wasUsed(future.wasUsed.load()) {
 
     }
 
-    Future &operator=(Future &&f) noexcept {
-        getWasUsed = f.getWasUsed.load();
-        state_ = std::move(f.state_);
+    Future &operator=(Future &&future) noexcept {
+        wasUsed = future.wasUsed.load();
+        state = std::move(future.state);
         return *this;
     }
 
@@ -38,37 +35,35 @@ public:
 
     Future &operator=(Future const &) = delete;
 
-
     T get() const {
-        if (getWasUsed) {
+        if (wasUsed) {
             throw std::runtime_error("get() has already been used");
         }
-        getWasUsed = true;
+        wasUsed = true;
         wait();
-        if (!state_->hasPromise && !isReady()) {
+        if (!state->hasPromise && !isReady()) {
             throw std::runtime_error("Future does not have Promise");
-        } else if (state_->exceptionPtr) {
-            std::rethrow_exception(state_->exceptionPtr);
+        } else if (state->exceptionPtr) {
+            std::rethrow_exception(state->exceptionPtr);
         } else {
-            return std::move(state_->value);
+            return std::move(state->value);
         }
     }
 
     bool isReady() const {
         ensureInitialized();
-        return state_->isReady;
+        return state->isReady;
     }
 
     void wait() const {
         ensureInitialized();
-        std::unique_lock<std::mutex> lock(state_->mutex);
+        std::unique_lock<std::mutex> lock(state->mutex);
         if (isReady()) {
             return;
         }
-        state_->conditionVariable.wait(lock, [this]() {
-            return isReady() || !state_->hasPromise;
+        state->conditionVariable.wait(lock, [this]() {
+            return isReady() || !state->hasPromise;
         });
-
     }
 
     Future() = default;
@@ -76,34 +71,29 @@ public:
     friend class Promise<T>;
 
 private:
-
-    std::shared_ptr<FutureState<T> > state_;
-    mutable std::atomic<bool> getWasUsed;
-
+    std::shared_ptr<FutureState<T> > state;
+    mutable std::atomic<bool> wasUsed;
 };
 
 template<typename T>
 class Future<T &> {
-
-    explicit Future(std::shared_ptr<FutureState<T &> > state) : state_{state}, getWasUsed(false) {
-
+    explicit Future(std::shared_ptr<FutureState<T &> > state) : state{state}, wasUsed(false) {
     }
 
     void ensureInitialized() const {
-        if (!state_) {
+        if (!state) {
             throw std::runtime_error("Future does not have state");
         }
     }
 
 public:
-
-    Future(Future &&f) noexcept : state_(std::move(f.state_)), getWasUsed(f.getWasUsed.load()) {
+    Future(Future &&f) noexcept : state(std::move(f.state)), wasUsed(f.wasUsed.load()) {
 
     }
 
-    Future &operator=(Future &&f) noexcept {
-        getWasUsed = f.getWasUsed.load();
-        state_ = std::move(f.state_);
+    Future &operator=(Future &&future) noexcept {
+        wasUsed = future.wasUsed.load();
+        state = std::move(future.state);
         return *this;
     }
 
@@ -112,71 +102,62 @@ public:
     Future &operator=(Future const &) = delete;
 
     T &get() const {
-
-        if (getWasUsed) {
+        if (wasUsed) {
             throw std::runtime_error("get() has already been used.");
         }
-        getWasUsed = true;
+        wasUsed = true;
         wait();
-        if (!state_->hasPromise && !isReady()) {
+        if (!state->hasPromise && !isReady()) {
             throw std::runtime_error("Future does not have Promise");
-        } else if (state_->exceptionPtr) {
-            std::rethrow_exception(state_->exceptionPtr);
+        } else if (state->exceptionPtr) {
+            std::rethrow_exception(state->exceptionPtr);
         } else
-            return *state_->value;
+            return *state->value;
     }
 
     bool isReady() const {
         ensureInitialized();
-        return state_->isReady;
+        return state->isReady;
     }
 
     void wait() const {
         ensureInitialized();
-        std::unique_lock<std::mutex> lock(state_->mutex);
+        std::unique_lock<std::mutex> lock(state->mutex);
         if (isReady()) {
             return;
         }
-        state_->conditionVariable.wait(lock, [this]() {
-            return isReady() || !state_->hasPromise;
+        state->conditionVariable.wait(lock, [this]() {
+            return isReady() || !state->hasPromise;
         });
-
     }
 
     friend class Promise<T &>;
 
 private:
-
-
-    mutable std::atomic<bool> getWasUsed;
-    std::shared_ptr<FutureState<T &> > state_;
-
+    mutable std::atomic<bool> wasUsed;
+    std::shared_ptr<FutureState<T &> > state;
 };
 
 template<>
 class Future<void> {
-
-    explicit Future(std::shared_ptr<FutureState<void> > state) : state_{state}, getWasUsed(false) {
+    explicit Future(std::shared_ptr<FutureState<void> > state) : state{state}, wasUsed(false) {
 
     }
 
     void ensureInitialized() const {
-        if (!state_) {
+        if (!state) {
             throw std::runtime_error("Future does not have state");
         }
     }
 
-
 public:
-
-
-    Future(Future &&f) noexcept : state_(std::move(f.state_)), getWasUsed(f.getWasUsed.load()) {
+    Future(Future &&f) noexcept : state(std::move(f.state)), wasUsed(f.wasUsed.load()) {
 
     }
 
     Future &operator=(Future &&f) noexcept {
-        getWasUsed = f.getWasUsed.load();
-        state_ = std::move(f.state_);
+        wasUsed = f.wasUsed.load();
+        state = std::move(f.state);
         return *this;
     }
 
@@ -185,32 +166,31 @@ public:
     Future &operator=(Future const &) = delete;
 
     void get() const {
-
-        if (getWasUsed) {
+        if (wasUsed) {
             throw std::runtime_error("get() has already been used.");
         }
-        getWasUsed = true;
+        wasUsed = true;
         wait();
-        if (!state_->hasPromise && !isReady()) {
+        if (!state->hasPromise && !isReady()) {
             throw std::runtime_error("Future does not have Promise");
-        } else if (state_->exceptionPtr) {
-            std::rethrow_exception(state_->exceptionPtr);
+        } else if (state->exceptionPtr) {
+            std::rethrow_exception(state->exceptionPtr);
         }
     }
 
     bool isReady() const {
         ensureInitialized();
-        return state_->isReady;
+        return state->isReady;
     }
 
     void wait() const {
         ensureInitialized();
-        std::unique_lock<std::mutex> lock(state_->mutex);
+        std::unique_lock<std::mutex> lock(state->mutex);
         if (isReady()) {
             return;
         }
-        state_->conditionVariable.wait(lock, [this]() {
-            return isReady() || !state_->hasPromise;
+        state->conditionVariable.wait(lock, [this]() {
+            return isReady() || !state->hasPromise;
         });
 
     }
@@ -219,7 +199,7 @@ public:
 
 private:
 
-    std::shared_ptr<FutureState<void> > state_;
-    mutable std::atomic<bool> getWasUsed;
+    std::shared_ptr<FutureState<void> > state;
+    mutable std::atomic<bool> wasUsed;
 };
 

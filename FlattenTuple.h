@@ -1,53 +1,47 @@
-//
-// Created by Александр on 14.11.2017.
-//
 #include "Promise.h"
 #include "Future.h"
 #include <tuple>
 
-
 template<typename T, typename Q = void>
-struct nested_type_getter;
-
+struct NestedTypeGetter;
 
 template<typename T>
-struct nested_type_getter<T> {
+struct NestedTypeGetter<T> {
     typedef T type_t;
 };
 
 template<typename T>
-struct nested_type_getter<Future<T>> {
-    typedef typename nested_type_getter<T>::type_t type_t;
+struct NestedTypeGetter<Future<T>> {
+    typedef typename NestedTypeGetter<T>::type_t type_t;
 };
 
-template <typename ...Args>
-struct nested_type_getter<std::tuple<Args...>> {
-    typedef std::tuple<typename nested_type_getter<Args>::type_t...> type_t;
+template<typename ...Args>
+struct NestedTypeGetter<std::tuple<Args...>> {
+    typedef std::tuple<typename NestedTypeGetter<Args>::type_t...> type_t;
 };
-
 
 template<typename T>
-T K(const T &future) {
+T flatten(const T &future) {
     return std::move(future);
 }
-template <typename T>
-auto K(const Future<T> & future){
-    return std::move(K(std::move(future.get())));
+
+template<typename T>
+auto flatten(const Future<T> &future) {
+    return std::move(flatten(std::move(future.get())));
 }
 
 template<typename ...Args, std::size_t... I>
-auto FlattenTupleImpl(const std::tuple<Args...>& a, std::index_sequence<I...>)
-{
-    return std::make_tuple(K(std::get<I>(a))...);
+auto flatten(const std::tuple<Args...> &tuple, std::index_sequence<I...>) {
+    return std::make_tuple(flatten(std::get<I>(tuple))...);
 }
 
-template <class ...TParams, typename Indices = std::make_index_sequence<sizeof...( TParams )>>
-auto FlattenTuple(std::tuple<TParams...> tuple){
-    using K = typename nested_type_getter<std::tuple<TParams...>>::type_t;
-    std::shared_ptr<Promise<K > > q (new Promise<K >);
-    std::thread([q, &tuple](){
-        auto t = FlattenTupleImpl(tuple, Indices{});
-        q->set(t);
+template<class ...tupleParams, typename makeIndexSequence = std::make_index_sequence<sizeof...(tupleParams)>>
+auto flattenTuple(std::tuple<tupleParams...> tuple) {
+    using K = typename NestedTypeGetter<std::tuple<tupleParams...>>::type_t;
+    std::shared_ptr<Promise<K> > promisePtr(new Promise<K>);
+    std::thread([promisePtr, &tuple]() {
+        auto t = flatten(tuple, makeIndexSequence{});
+        promisePtr->set(t);
     }).detach();
-    return q->getFuture();
+    return promisePtr->getFuture();
 }

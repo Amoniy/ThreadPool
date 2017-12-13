@@ -1,19 +1,19 @@
 #include "ThreadPool.h"
 
-ThreadPool::ThreadPool(size_t num_thread) : enable(true) {
+ThreadPool::ThreadPool(size_t num_thread) : working(false) {
     for (size_t i = 0; i < num_thread; i++) {
         threads.emplace_back([this]() {
-            thl = this;
+            localThreadPoolPtr = this;
             while (true) {
                 std::function<void()> task;
                 {
-                    std::unique_lock<std::mutex> lock(mtx);
-                    cond.wait(lock, [this]() {
-                        return !tasks.empty() || !enable;
+                    std::unique_lock<std::mutex> lock(mutex);
+                    conditionVariable.wait(lock, [this]() {
+                        return !queue.empty() || working;
                     });
-                    if (!enable && tasks.empty()) return;
-                    task = std::move(tasks.front());
-                    tasks.pop();
+                    if (working && queue.empty()) return;
+                    task = std::move(queue.front());
+                    queue.pop();
                 }
                 task();
             }
@@ -23,14 +23,14 @@ ThreadPool::ThreadPool(size_t num_thread) : enable(true) {
 
 ThreadPool::~ThreadPool() {
     {
-        enable = false;
-        std::unique_lock<std::mutex> lock(mtx);
+        working = true;
+        std::unique_lock<std::mutex> lock(mutex);
     }
-    cond.notify_all();
+    conditionVariable.notify_all();
 
-    for (auto &th: threads) {
-        th.join();
+    for (auto &thread: threads) {
+        thread.join();
     }
 }
 
-thread_local ThreadPool *ThreadPool::thl = nullptr;
+thread_local ThreadPool *ThreadPool::localThreadPoolPtr = nullptr;

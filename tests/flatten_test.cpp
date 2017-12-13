@@ -163,14 +163,14 @@ protected:
 ///int
 TEST_F(TestInitInt, testFutureInt1) {
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future))));
+    Future<int> res(std::move(flatten(std::move(future))));
     ASSERT_EQ(res.Get(), ans);
 }
 
 TEST_F(TestInitInt, testFutureInt2) {
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future1))));
+    Future<int> res(std::move(flatten(std::move(future1))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -178,7 +178,7 @@ TEST_F(TestInitInt, testFutureInt3) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future2))));
+    Future<int> res(std::move(flatten(std::move(future2))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -187,7 +187,7 @@ TEST_F(TestInitInt, testFutureInt4) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future3))));
+    Future<int> res(std::move(flatten(std::move(future3))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -197,7 +197,7 @@ TEST_F(TestInitInt, testFutureInt5) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future4))));
+    Future<int> res(std::move(flatten(std::move(future4))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -208,20 +208,20 @@ TEST_F(TestInitInt, testFutureInt6) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future5))));
+    Future<int> res(std::move(flatten(std::move(future5))));
     ASSERT_EQ(res.Get(), ans);
 }
 ///double
 TEST_F(TestInitDouble, testFutureDouble1) {
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future))));
+    Future<double> res(std::move(flatten(std::move(future))));
     ASSERT_EQ(res.Get(), ans);
 }
 
 TEST_F(TestInitDouble, testFutureDouble2) {
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future1))));
+    Future<double> res(std::move(flatten(std::move(future1))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -229,7 +229,7 @@ TEST_F(TestInitDouble, testFutureDouble3) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future2))));
+    Future<double> res(std::move(flatten(std::move(future2))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -238,7 +238,7 @@ TEST_F(TestInitDouble, testFutureDouble4) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future3))));
+    Future<double> res(std::move(flatten(std::move(future3))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -248,7 +248,7 @@ TEST_F(TestInitDouble, testFutureDouble5) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future4))));
+    Future<double> res(std::move(flatten(std::move(future4))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -259,20 +259,20 @@ TEST_F(TestInitDouble, testFutureDouble6) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<double> res(std::move(Flatten(std::move(future5))));
+    Future<double> res(std::move(flatten(std::move(future5))));
     ASSERT_EQ(res.Get(), ans);
 }
 ///object
 TEST_F(TestInitObject, testFutureObject1) {
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future))));
+    Future<Obj> res(std::move(flatten(std::move(future))));
     ASSERT_EQ(res.Get(), ans);
 }
 
 TEST_F(TestInitObject, testFutureObject2) {
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future1))));
+    Future<Obj> res(std::move(flatten(std::move(future1))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -280,7 +280,7 @@ TEST_F(TestInitObject, testFutureObject3) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future2))));
+    Future<Obj> res(std::move(flatten(std::move(future2))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -289,7 +289,7 @@ TEST_F(TestInitObject, testFutureObject4) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future3))));
+    Future<Obj> res(std::move(flatten(std::move(future3))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -299,7 +299,7 @@ TEST_F(TestInitObject, testFutureObject5) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future4))));
+    Future<Obj> res(std::move(flatten(std::move(future4))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -310,20 +310,20 @@ TEST_F(TestInitObject, testFutureObject6) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<Obj> res(std::move(Flatten(std::move(future5))));
+    Future<Obj> res(std::move(flatten(std::move(future5))));
     ASSERT_EQ(res.Get(), ans);
 }
 ///string
 TEST_F(TestInitString, testFutureString1) {
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future))));
+    Future<std::string> res(std::move(flatten(std::move(future))));
     ASSERT_EQ(res.Get(), ans);
 }
 
 TEST_F(TestInitString, testFutureString2) {
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future1))));
+    Future<std::string> res(std::move(flatten(std::move(future1))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -331,7 +331,7 @@ TEST_F(TestInitString, testFutureString3) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future2))));
+    Future<std::string> res(std::move(flatten(std::move(future2))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -340,7 +340,7 @@ TEST_F(TestInitString, testFutureString4) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future3))));
+    Future<std::string> res(std::move(flatten(std::move(future3))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -350,7 +350,7 @@ TEST_F(TestInitString, testFutureString5) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future4))));
+    Future<std::string> res(std::move(flatten(std::move(future4))));
     ASSERT_EQ(res.Get(), ans);
 }
 
@@ -361,12 +361,12 @@ TEST_F(TestInitString, testFutureString6) {
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
-    Future<std::string> res(std::move(Flatten(std::move(future5))));
+    Future<std::string> res(std::move(flatten(std::move(future5))));
     ASSERT_EQ(res.Get(), ans);
 }
 ///async
 TEST_F(TestInitInt, testAsync1) {
-    Future<int> res(std::move(Flatten(std::move(future))));
+    Future<int> res(std::move(flatten(std::move(future))));
     std::this_thread::sleep_for(std::chrono::seconds(1));
     promise.Set(ans);
     ASSERT_EQ(res.Get(), ans);
@@ -374,15 +374,13 @@ TEST_F(TestInitInt, testAsync1) {
 
 TEST_F(TestInitInt, testAsync2) {
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future1))));
-    //std::this_thread::sleep_for(std::chrono::seconds(1));
-    std::cout << "diuaojsdoasj" << std::endl;
+    Future<int> res(std::move(flatten(std::move(future1))));
     promise1.Set(std::move(future));
     ASSERT_EQ(res.Get(), ans);
 }
 
 TEST_F(TestInitInt, testAsync3) {
-    Future<int> res(std::move(Flatten(std::move(future2))));
+    Future<int> res(std::move(flatten(std::move(future2))));
     std::this_thread::sleep_for(std::chrono::seconds(2));
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
@@ -393,7 +391,7 @@ TEST_F(TestInitInt, testAsync3) {
 TEST_F(TestInitInt, testAsync4) {
     promise3.Set(std::move(future2));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future3))));
+    Future<int> res(std::move(flatten(std::move(future3))));
     std::this_thread::sleep_for(std::chrono::seconds(3));
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
@@ -404,7 +402,7 @@ TEST_F(TestInitInt, testAsync5) {
     promise4.Set(std::move(future3));
     promise2.Set(std::move(future1));
     promise.Set(ans);
-    Future<int> res(std::move(Flatten(std::move(future4))));
+    Future<int> res(std::move(flatten(std::move(future4))));
     std::this_thread::sleep_for(std::chrono::seconds(1));
     promise3.Set(std::move(future2));
     promise1.Set(std::move(future));
@@ -414,7 +412,7 @@ TEST_F(TestInitInt, testAsync5) {
 TEST_F(TestInitInt, testAsync6) {
     promise5.Set(std::move(future4));
     promise3.Set(std::move(future2));
-    Future<int> res(std::move(Flatten(std::move(future5))));
+    Future<int> res(std::move(flatten(std::move(future5))));
     promise2.Set(std::move(future1));
     promise1.Set(std::move(future));
     promise.Set(ans);
@@ -429,7 +427,7 @@ TEST_F(TestInitCT, testList) {
         l.push_back((p.GetFuture()));
         p.Set(i);
     }
-    std::list<int> c = Flatten(l).Get();
+    std::list<int> c = flatten(l).Get();
     ASSERT_EQ(ansL, c);
 }
 
@@ -439,7 +437,7 @@ TEST_F(TestInitCT, testVector) {
         v.push_back((p.GetFuture()));
         p.Set(i);
     }
-    std::vector<int> c = Flatten(v).Get();
+    std::vector<int> c = flatten(v).Get();
     ASSERT_EQ(ansV, c);
 }
 
@@ -450,7 +448,7 @@ TEST_F(TestInitCT, testListAsync) {
         l.push_back(it->GetFuture());
         ++it;
     }
-    Future<std::list<int> > g = Flatten(l);
+    Future<std::list<int> > g = flatten(l);
     std::this_thread::sleep_for(std::chrono::seconds(2));
     it = prom.begin();
     for (int i = 0; i < N; i++) {
@@ -466,7 +464,7 @@ TEST_F(TestInitCT, testVectorAsync) {
     for (int i = 0; i < N; i++) {
         v.push_back(prom[i].GetFuture());
     }
-    Future<std::vector<int> > g = Flatten(v);
+    Future<std::vector<int> > g = flatten(v);
     std::this_thread::sleep_for(std::chrono::seconds(2));
     for (int i = 0; i < N; i++) {
         prom[i].Set(i);

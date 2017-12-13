@@ -1,32 +1,28 @@
-//
-// Created by Александр on 02.11.2017.
-//
-
 #include <iostream>
 #include "ThreadPool.h"
 #include "Promise.h"
 #include "Future.h"
 
 template<typename T, typename F>
-Future<typename std::result_of<F(T)>::type> Map(Future<T> futa, const F & func) {
+Future<typename std::result_of<F(T)>::type> Map(Future<T> future, const F &function) {
     using K = typename std::result_of<F(T)>::type;
-    ThreadPool * curPool = nullptr;
-    if(futa.getPool()) {
-        curPool = futa.getPool();
-    } else if(ThreadPool::thl) {
-        curPool = ThreadPool::thl;
+    ThreadPool *currentPool = nullptr;
+    if (future.getPool()) {
+        currentPool = future.getPool();
+    } else if (ThreadPool::localThreadPoolPtr) {
+        currentPool = ThreadPool::localThreadPoolPtr;
     }
-    std::shared_ptr<Promise<K>> p = std::shared_ptr<Promise<K>>(new Promise<K>());
+    std::shared_ptr<Promise<K>> promisePtr = std::shared_ptr<Promise<K>>(new Promise<K>());
 
-    if(curPool) {
-        curPool -> execute([&futa, &func, p] {
-            p->set(std::move(func(futa.get())));
+    if (currentPool) {
+        currentPool->execute([&future, &function, promisePtr] {
+            promisePtr->set(std::move(function(future.get())));
 
         });
     } else {
-        std::thread([&futa, &func, p](){
-            p->set(std::move(func(futa.get())));
+        std::thread([&future, &function, promisePtr]() {
+            promisePtr->set(std::move(function(future.get())));
         }).detach();
     }
-    return std::move(p->getFuture());
+    return std::move(promisePtr->getFuture());
 }
